@@ -1,149 +1,121 @@
 "use client";
 
+import { products } from "../data/products";
 import { useState } from "react";
-
-type Language = "en" | "fr";
-
-const copy = {
-  en: {
-    brand: "Muse Maison",
-    heroKicker: "Refined Home Essentials",
-    heroTitle: "Elevate Your Everyday / Sublimez votre quotidien",
-    intro:
-      "Curated pieces designed to bring calm, beauty, and intention to modern rituals.",
-    cta: "Explore Collection",
-    categoriesTitle: "Shop by Category",
-    categories: [
-      "Cookware",
-      "Drinkware",
-      "Tableware",
-      "Serveware",
-      "Kitchen Textiles",
-      "Home Decor",
-      "Storage",
-      "Gift Sets",
-    ],
-  },
-  fr: {
-    brand: "Muse Maison",
-    heroKicker: "Essentiels Maison Raffines",
-    heroTitle: "Elevate Your Everyday / Sublimez votre quotidien",
-    intro:
-      "Des pieces selectionnees pour apporter calme, beaute et intention aux rituels du quotidien.",
-    cta: "Decouvrir la Collection",
-    categoriesTitle: "Acheter par categorie",
-    categories: [
-      "Batterie de cuisine",
-      "Verres et tasses",
-      "Arts de la table",
-      "Service de table",
-      "Textiles de cuisine",
-      "Decoration",
-      "Rangement",
-      "Coffrets cadeaux",
-    ],
-  },
-} satisfies Record<
-  Language,
-  {
-    brand: string;
-    heroKicker: string;
-    heroTitle: string;
-    intro: string;
-    cta: string;
-    categoriesTitle: string;
-    categories: string[];
-  }
->;
+import Image from "next/image";
 
 export default function Home() {
-  const [language, setLanguage] = useState<Language>("en");
-  const t = copy[language];
+  const [lang, setLang] = useState("EN");
+
+  const content = {
+    EN: {
+      title: "Elevate Your Everyday",
+      sub: "Curated kitchenware inspired by the Rockies, delivered across Canada.",
+      cta: "Explore Collections",
+      about: "Based in Calgary, Muse Maison brings the art of living to your home.",
+      featured: "Featured Products",
+      story: "Our Story",
+    },
+    FR: {
+      title: "Sublimez votre quotidien",
+      sub: "Des articles de cuisine inspirés des Rocheuses, livrés partout au Canada.",
+      cta: "Explorer les collections",
+      about: "Basée à Calgary, Muse Maison apporte l'art de vivre dans votre foyer.",
+      featured: "Produits Vedettes",
+      story: "Notre Histoire",
+    },
+  };
+
+  const t = lang === "EN" ? content.EN : content.FR;
 
   return (
-    <div className="min-h-screen bg-[#f8f6f2] text-[#2e3238]">
-      <main>
-        <section
-          className="relative isolate min-h-[78vh] overflow-hidden"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(17, 19, 23, 0.45), rgba(17, 19, 23, 0.5)), url('/hero-bg.jpg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
+    <main className="min-h-screen bg-[#F9F9F9] text-[#2F2F2F]">
+      <nav className="sticky top-0 z-50 flex items-center justify-between border-b bg-white/80 px-8 py-4 backdrop-blur-md">
+        <div className="relative h-12 w-32">
+          <Image
+            src="/logo.jpg"
+            alt="Muse Maison Logo"
+            fill
+            sizes="128px"
+            className="object-contain"
+            priority
+          />
+        </div>
+
+        <button
+          onClick={() => setLang(lang === "EN" ? "FR" : "EN")}
+          className="font-medium transition-colors hover:text-blue-600"
         >
-          <div className="mx-auto flex w-full max-w-6xl items-start justify-between px-6 pt-8 md:px-10">
-            <span className="text-xs font-medium tracking-[0.22em] uppercase text-white/85">
-              {t.brand}
-            </span>
+          {lang === "EN" ? "FRANÇAIS" : "ENGLISH"}
+        </button>
+      </nav>
 
-            <div className="rounded-full border border-white/25 bg-black/20 px-3 py-1.5 text-xs tracking-[0.18em] text-white">
-              <button
-                type="button"
-                className={`transition-opacity ${language === "en" ? "opacity-100" : "opacity-60 hover:opacity-85"}`}
-                onClick={() => setLanguage("en")}
-                aria-pressed={language === "en"}
-              >
-                EN
-              </button>
-              <span className="px-2 opacity-60">/</span>
-              <button
-                type="button"
-                className={`transition-opacity ${language === "fr" ? "opacity-100" : "opacity-60 hover:opacity-85"}`}
-                onClick={() => setLanguage("fr")}
-                aria-pressed={language === "fr"}
-              >
-                FR
-              </button>
-            </div>
-          </div>
+      <section className="relative flex h-[80vh] items-center justify-center text-center text-white">
+        <Image
+          src="/hero-bg.jpg"
+          alt="Hero background"
+          fill
+          className="object-cover brightness-75"
+          priority
+        />
 
-          <div className="mx-auto flex min-h-[68vh] w-full max-w-6xl items-end px-6 pb-16 pt-14 md:px-10">
-            <div className="max-w-3xl">
-              <p className="mb-4 text-xs tracking-[0.28em] uppercase text-white/75">
-                {t.heroKicker}
-              </p>
-              <h1 className="text-4xl font-medium tracking-tight text-white md:text-6xl">
-                {t.heroTitle}
-              </h1>
-              <p className="mt-6 max-w-2xl text-base leading-7 text-white/90 md:text-lg">
-                {t.intro}
-              </p>
-              <button
-                type="button"
-                className="mt-10 border border-white/90 px-6 py-3 text-xs font-medium tracking-[0.16em] uppercase text-white transition hover:bg-white hover:text-[#1f2328]"
-              >
-                {t.cta}
-              </button>
-            </div>
-          </div>
-        </section>
+        <div className="relative z-10 space-y-6 px-4">
+          <h1 className="text-5xl font-serif md:text-7xl">{t.title}</h1>
+          <p className="mx-auto max-w-2xl text-xl">{t.sub}</p>
+          <button className="rounded-full bg-white px-8 py-3 text-black transition-all hover:bg-opacity-90">
+            {t.cta}
+          </button>
+        </div>
+      </section>
 
-        <section className="mx-auto w-full max-w-6xl px-6 py-20 md:px-10">
-          <div className="mb-10 flex items-end justify-between gap-4">
-            <h2 className="text-2xl font-medium tracking-tight text-[#1f2328] md:text-3xl">
-              {t.categoriesTitle}
+      <section className="bg-[#f7f5f1] px-6 py-16 md:px-12 lg:px-20">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-10">
+            <p className="mb-2 text-sm uppercase tracking-[0.25em] text-gray-500">
+              Muse Maison
+            </p>
+            <h2 className="text-3xl font-semibold text-gray-900 md:text-4xl">
+              {t.featured}
             </h2>
-            <div className="h-px flex-1 bg-[#d8d2c7]" />
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {t.categories.map((category) => (
-              <article
-                key={category}
-                className="group border border-[#ddd6ca] bg-[#fcfbf8] px-5 py-7 transition-colors hover:border-[#b8ad99]"
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {products.map((product) => (
+              <div
+                key={product.sku}
+                className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
               >
-                <h3 className="text-sm font-medium tracking-[0.08em] uppercase text-[#343941]">
-                  {category}
-                </h3>
-                <p className="mt-3 text-xs text-[#7b7f86] opacity-0 transition-opacity group-hover:opacity-100">
-                  {language === "en" ? "View selection" : "Voir la selection"}
-                </p>
-              </article>
+                <div className="aspect-[4/5] overflow-hidden bg-white p-6">
+                  <img
+                    src={product.image}
+                    alt={lang === "EN" ? product.name_en : product.name_fr}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+
+                <div className="space-y-3 p-5">
+                  <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
+                    {product.category}
+                  </p>
+
+                  <h3 className="text-lg font-medium text-gray-900">
+                    {lang === "EN" ? product.name_en : product.name_fr}
+                  </h3>
+
+                  <p className="text-base text-gray-700">
+                    ${product.price.toFixed(2)}
+                  </p>
+                </div>
+              </div>
             ))}
           </div>
-        </section>
-      </main>
-    </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-4xl px-8 py-20 text-center">
+        <h2 className="mb-6 text-3xl font-serif">{t.story}</h2>
+        <p className="text-lg leading-relaxed text-gray-600">{t.about}</p>
+      </section>
+    </main>
   );
 }
