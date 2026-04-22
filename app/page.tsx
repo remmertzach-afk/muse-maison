@@ -1,11 +1,45 @@
 "use client";
 
-import { products } from "../data/products";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
+import { client } from "../sanity/lib/client";
+
+type Product = {
+  _id: string;
+  name_en?: string;
+  name_fr?: string;
+  image?: string;
+  category?: {
+    name_en?: string;
+    name_fr?: string;
+  };
+};
 
 export default function Home() {
-  const [lang, setLang] = useState("EN");
+  const [lang, setLang] = useState<"EN" | "FR">("EN");
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      const data = await client.fetch(`
+        *[_type == "product"]{
+          _id,
+          name_en,
+          name_fr,
+          "image": image.asset->url,
+          category->{
+            name_en,
+            name_fr
+          }
+        }
+      `);
+
+      console.log("Sanity products:", data);
+      setProducts(data);
+    }
+
+    fetchProducts();
+  }, []);
 
   const content = {
     EN: {
@@ -15,6 +49,9 @@ export default function Home() {
       about: "Based in Calgary, Muse Maison brings the art of living to your home.",
       featured: "Featured Products",
       story: "Our Story",
+      uncategorized: "Uncategorized",
+      noImage: "No image",
+      untitled: "Untitled Product",
     },
     FR: {
       title: "Sublimez votre quotidien",
@@ -23,6 +60,9 @@ export default function Home() {
       about: "Basée à Calgary, Muse Maison apporte l'art de vivre dans votre foyer.",
       featured: "Produits Vedettes",
       story: "Notre Histoire",
+      uncategorized: "Non classé",
+      noImage: "Pas d’image",
+      untitled: "Produit sans nom",
     },
   };
 
@@ -82,29 +122,39 @@ export default function Home() {
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {products.map((product) => (
               <div
-                key={product.sku}
+                key={product._id}
                 className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
               >
                 <div className="aspect-[4/5] overflow-hidden bg-white p-6">
-                  <img
-                    src={product.image}
-                    alt={lang === "EN" ? product.name_en : product.name_fr}
-                    className="h-full w-full object-cover"
-                  />
+                  {product.image ? (
+                    <img
+                      src={product.image}
+                      alt={
+                        lang === "EN"
+                          ? product.name_en || t.untitled
+                          : product.name_fr || t.untitled
+                      }
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-sm text-gray-400">
+                      {t.noImage}
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-3 p-5">
                   <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
-                    {product.category}
+                    {lang === "EN"
+                      ? product.category?.name_en || t.uncategorized
+                      : product.category?.name_fr || t.uncategorized}
                   </p>
 
                   <h3 className="text-lg font-medium text-gray-900">
-                    {lang === "EN" ? product.name_en : product.name_fr}
+                    {lang === "EN"
+                      ? product.name_en || t.untitled
+                      : product.name_fr || t.untitled}
                   </h3>
-
-                  <p className="text-base text-gray-700">
-                    ${product.price.toFixed(2)}
-                  </p>
                 </div>
               </div>
             ))}
